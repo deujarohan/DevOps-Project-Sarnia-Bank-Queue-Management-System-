@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Queue — QueueFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F4F1EC;
+    --surface: #FFFFFF;
+    --primary: #1A1A2E;
+    --accent: #4361EE;
+    --accent-light: #EEF1FF;
+    --success: #0F6E56;
+    --success-bg: #E1F5EE;
+    --text: #1A1A2E;
+    --muted: #6B7280;
+    --border: #E5E1D8;
+    --ticket-bg: #1A1A2E;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 24px;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--text); }
+  nav a.active { color: var(--accent); font-weight: 500; }
+
+  .hero {
+    text-align: center;
+    padding: 4rem 1rem 2rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--success-bg);
+    color: var(--success);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -1px;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .hero p {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .main-grid {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+    background: white;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .service-option {
+    position: relative;
+  }
+
+  .service-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .service-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    background: var(--bg);
+  }
+
+  .service-label:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .service-option input:checked + .service-label {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+  }
+
+  .service-icon {
+    font-size: 24px;
+  }
+
+  .service-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary:hover { background: #2d4fd6; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: #A0AEC0; cursor: not-allowed; }
+
+  /* Ticket result */
+  .ticket-container { display: none; }
+
+  .ticket {
+    background: var(--ticket-bg);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ticket::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(67, 97, 238, 0.3);
+  }
+
+  .ticket-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 8px;
+  }
+
+  .ticket-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 3rem;
+    font-weight: 500;
+    letter-spacing: 4px;
+    margin-bottom: 1.5rem;
+    color: #A5B4FC;
+  }
+
+  .ticket-divider {
+    border: none;
+    border-top: 1px dashed rgba(255,255,255,0.2);
+    margin: 1rem 0;
+  }
+
+  .ticket-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .ticket-row span:first-child { opacity: 0.6; }
+  .ticket-row span:last-child { font-weight: 500; }
+
+  .ticket-status {
+    margin-top: 1rem;
+    padding: 8px 16px;
+    background: rgba(67, 97, 238, 0.3);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+  }
+
+  /* Queue info sidebar */
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .stat-item:last-child { border-bottom: none; }
+  .stat-value { font-weight: 600; font-size: 18px; }
+  .stat-label { color: var(--muted); }
+
+  .info-box {
+    background: var(--accent-light);
+    border: 1px solid #C7D2FE;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13px;
+    color: #3730A3;
+    margin-top: 1rem;
+    line-height: 1.5;
+  }
+
+  .error-msg {
+    color: #DC2626;
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Queue<span>Flow</span></div>
+  <div>
+    <a href="index.html" class="active">Join Queue</a>
+    <a href="display.html">Display Board</a>
+    <a href="admin.html">Admin</a>
+    <a href="history.html">History</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Service is open</div>
+  <h1>Skip the wait,<br><em>not the service</em></h1>
+  <p>Join our digital queue and we'll notify you when it's your turn. No more standing in line.</p>
+</div>
+
+<div class="main-grid">
+
+  <!-- Join Form -->
+  <div>
+    <div class="card" id="form-card">
+      <div class="card-title">Get your ticket</div>
+
+      <div class="form-group">
+        <label for="customerName">Your full name</label>
+        <input type="text" id="customerName" placeholder="e.g. Jane Smith" autocomplete="off">
+        <div class="error-msg" id="name-error">Please enter your name</div>
+      </div>
+
+      <div class="form-group">
+        <label>Select service type</label>
+        <div class="service-grid">
+          <div class="service-option">
+            <input type="radio" name="serviceType" id="s-general" value="GENERAL" checked>
+            <label class="service-label" for="s-general">
+              <span class="service-icon">💬</span>
+              <span class="service-name">General Inquiry</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="radio" name="serviceType" id="s-account" value="ACCOUNT">
+            <label class="service-label" for="s-account">
+              <span class="service-icon">🏦</span>
+              <span class="service-name">Account Services</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="radio" name="serviceType" id="s-loan" value="LOAN">
+            <label class="service-label" for="s-loan">
+              <span class="service-icon">📋</span>
+              <span class="service-name">Loan & Mortgage</span>
+            </label>
+          </div>
+          <div class="service-option">
+            <input type="radio" name="serviceType" id="s-support" value="SUPPORT">
+            <label class="service-label" for="s-support">
+              <span class="service-icon">🔧</span>
+              <span class="service-name">Technical Support</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="joinBtn" onclick="joinQueue()">Get my ticket →</button>
+    </div>
+
+    <!-- Ticket Result -->
+    <div class="ticket-container card" id="ticket-container">
+      <div class="card-title">Your ticket</div>
+      <div class="ticket">
+        <div class="ticket-label">Ticket Number</div>
+        <div class="ticket-number" id="ticket-number">—</div>
+        <hr class="ticket-divider">
+        <div class="ticket-row">
+          <span>Name</span>
+          <span id="ticket-name">—</span>
+        </div>
+        <div class="ticket-row">
+          <span>Service</span>
+          <span id="ticket-service">—</span>
+        </div>
+        <div class="ticket-row">
+          <span>Position in queue</span>
+          <span id="ticket-position">—</span>
+        </div>
+        <div class="ticket-row">
+          <span>Estimated wait</span>
+          <span id="ticket-wait">—</span>
+        </div>
+        <div class="ticket-status">Waiting</div>
+      </div>
+      <button class="btn-primary" onclick="resetForm()" style="margin-top: 1rem;">Join again</button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div>
+    <div class="card">
+      <div class="card-title">Live queue status</div>
+      <div class="stat-item">
+        <span class="stat-label">Waiting now</span>
+        <span class="stat-value" id="stat-waiting">—</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Currently serving</span>
+        <span class="stat-value" id="stat-serving">—</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Avg wait time</span>
+        <span class="stat-value" id="stat-avg">—</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Served today</span>
+        <span class="stat-value" id="stat-served">—</span>
+      </div>
+      <div class="info-box">
+        📍 Please stay nearby. You'll be called by your ticket number when it's your turn.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  async function joinQueue() {
+    const name = document.getElementById('customerName').value.trim();
+    const serviceType = document.querySelector('input[name="serviceType"]:checked').value;
+    const errorEl = document.getElementById('name-error');
+
+    if (!name) {
+      errorEl.style.display = 'block';
+      return;
+    }
+    errorEl.style.display = 'none';
+
+    const btn = document.getElementById('joinBtn');
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
+    try {
+      const response = await fetch('/api/queue/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerName: name, serviceType })
+      });
+
+      if (!response.ok) throw new Error('Failed to join queue');
+      const data = await response.json();
+
+      document.getElementById('ticket-number').textContent = data.ticketNumber;
+      document.getElementById('ticket-name').textContent = data.customerName;
+      document.getElementById('ticket-service').textContent = formatServiceType(data.serviceType);
+      document.getElementById('ticket-position').textContent = '#' + (data.position || 1);
+      document.getElementById('ticket-wait').textContent = (data.estimatedWaitMinutes || 5) + ' min';
+
+      document.getElementById('form-card').style.display = 'none';
+      const container = document.getElementById('ticket-container');
+      container.style.display = 'block';
+
+    } catch (err) {
+      alert('Could not join queue. Is the server running?');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Get my ticket →';
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('form-card').style.display = 'block';
+    document.getElementById('ticket-container').style.display = 'none';
+    document.getElementById('customerName').value = '';
+  }
+
+  function formatServiceType(type) {
+    const map = { GENERAL: 'General Inquiry', ACCOUNT: 'Account Services', LOAN: 'Loan & Mortgage', SUPPORT: 'Technical Support' };
+    return map[type] || type;
+  }
+
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/queue/stats');
+      const data = await res.json();
+      document.getElementById('stat-waiting').textContent = data.waiting ?? '0';
+      document.getElementById('stat-serving').textContent = data.serving ?? '0';
+      document.getElementById('stat-avg').textContent = (data.averageWaitMinutes || 0) + ' min';
+      document.getElementById('stat-served').textContent = data.served ?? '0';
+    } catch {}
+  }
+
+  loadStats();
+  setInterval(loadStats, 5000);
+</script>
+</body>
+</html>
