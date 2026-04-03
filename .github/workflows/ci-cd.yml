@@ -92,8 +92,26 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
+            # Kill old process if running
             pkill -f 'queue-management' || true
-            sleep 2
+            pkill -f 'java' || true
+            sleep 3
+
+            # Make sure app folder exists
+            mkdir -p /home/${{ secrets.AZURE_VM_USER }}/app
+
+            # Go to app folder
             cd /home/${{ secrets.AZURE_VM_USER }}/app
-            nohup java -jar *.jar > app.log 2>&1 &
-            echo "Application started successfully"
+
+            # Start the app in background, fully detached
+            nohup java -jar *.jar --server.port=8080 > app.log 2>&1 &
+
+            # Give it a moment to start
+            sleep 5
+
+            # Verify it started
+            if pgrep -f 'queue-management' > /dev/null; then
+              echo "Application started successfully"
+            else
+              echo "App may still be starting, check app.log"
+            fi
