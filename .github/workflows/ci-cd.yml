@@ -86,12 +86,12 @@ jobs:
           target: "/home/azureuser/app"
 
       - name: Start application on Azure VM
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.AZURE_VM_HOST }}
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          request_pty: false
+          script_stop: false
           script: |
             pkill -f 'java' || true
             sleep 2
@@ -99,4 +99,4 @@ jobs:
             cd /home/azureuser/app
             nohup java -jar *.jar --server.port=8080 > app.log 2>&1 &
             disown $!
-            echo "Application deployed successfully"
+            echo "done"
