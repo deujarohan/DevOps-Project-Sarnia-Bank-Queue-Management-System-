@@ -1,6 +1,5 @@
 package com.queue_manage.manage_queue.model;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;

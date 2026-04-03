@@ -160,6 +160,8 @@ public class QueueService {
             case LOAN -> "L";
             case SUPPORT -> "S";
         };
+        // Format the ticket number as prefix + 3 digits with leading zeros (e.g., "TKT-001")
+        // Uses post-increment to use current counter value, then increment for next call
         return prefix + String.format("%03d", ticketCounter++);
     }
 }

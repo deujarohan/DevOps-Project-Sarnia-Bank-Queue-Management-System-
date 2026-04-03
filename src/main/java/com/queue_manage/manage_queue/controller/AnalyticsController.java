@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analytics")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // Allow any website to call this
 public class AnalyticsController {
 
     @Autowired

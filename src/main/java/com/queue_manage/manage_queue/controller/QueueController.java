@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/queue")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // Allow any website to call this
 public class QueueController {
 
     @Autowired
