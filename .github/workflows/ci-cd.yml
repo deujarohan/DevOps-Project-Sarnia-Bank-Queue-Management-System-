@@ -105,6 +105,7 @@ jobs:
 
             # Start the app in background, fully detached
             nohup java -jar *.jar --server.port=8080 > app.log 2>&1 &
+            disown
 
             # Give it a moment to start
             sleep 5
