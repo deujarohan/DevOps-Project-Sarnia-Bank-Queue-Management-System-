@@ -102,5 +102,13 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
+            -o ServerAliveInterval=10 \
             ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }} \
-            "pkill -f 'java' || true; sleep 2; cd /home/azureuser/app; nohup java -jar *.jar --server.port=8080 > app.log 2>&1 & disown \$!; exit 0"
+            "bash -s" << 'ENDSSH'
+            pkill -f 'java' || true
+            sleep 2
+            mkdir -p /home/azureuser/app
+            cd /home/azureuser/app
+            nohup java -jar *.jar --server.port=8080 >> app.log 2>&1 &
+            echo "App started with PID $!"
+          ENDSSH
