@@ -76,27 +76,21 @@ jobs:
         with:
           name: app-jar
 
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AZURE_VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.AZURE_VM_HOST }} >> ~/.ssh/known_hosts
+
       - name: Copy JAR to Azure VM
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.AZURE_VM_HOST }}
-          username: ${{ secrets.AZURE_VM_USER }}
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          source: "*.jar"
-          target: "/home/azureuser/app"
+        run: |
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            *.jar \
+            ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/azureuser/app/
 
       - name: Start application on Azure VM
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.AZURE_VM_HOST }}
-          username: ${{ secrets.AZURE_VM_USER }}
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          script_stop: false
-          script: |
-            pkill -f 'java' || true
-            sleep 2
-            mkdir -p /home/azureuser/app
-            cd /home/azureuser/app
-            nohup java -jar *.jar --server.port=8080 > app.log 2>&1 &
-            disown $!
-            echo "done"
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }} \
+            "pkill -f 'java' || true; sleep 2; cd /home/azureuser/app; nohup java -jar *.jar --server.port=8080 > app.log 2>&1 & disown \$!; exit 0"
