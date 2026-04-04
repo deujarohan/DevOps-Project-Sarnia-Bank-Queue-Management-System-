@@ -79,18 +79,28 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AZURE_VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.AZURE_VM_SSH_KEY }}" | base64 -d > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.AZURE_VM_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Test SSH connection
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=10 \
+            ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }} \
+            "echo SSH connection successful"
+
       - name: Copy JAR to Azure VM
         run: |
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+          scp -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
             *.jar \
             ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }}:/home/azureuser/app/
 
       - name: Start application on Azure VM
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+          ssh -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
             ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_HOST }} \
             "pkill -f 'java' || true; sleep 2; cd /home/azureuser/app; nohup java -jar *.jar --server.port=8080 > app.log 2>&1 & disown \$!; exit 0"
