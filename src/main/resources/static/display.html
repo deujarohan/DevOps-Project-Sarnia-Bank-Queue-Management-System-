@@ -1,290 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Display Board — QueueFlow</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Display Board — QueueFlow</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #060612;
-    min-height: 100vh;
-    color: white;
-    display: flex;
-    flex-direction: column;
-  }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: #060612;
+        min-height: 100vh;
+        color: white;
+        display: flex;
+        flex-direction: column;
+      }
 
-  header {
-    padding: 1.5rem 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
+      header {
+        padding: 1.5rem 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
 
-  .logo { font-size: 20px; font-weight: 600; }
-  .logo span { color: #A5B4FC; }
+      .logo {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .logo span {
+        color: #a5b4fc;
+      }
 
-  .clock {
-    font-family: 'DM Mono', monospace;
-    font-size: 22px;
-    color: rgba(255,255,255,0.5);
-    letter-spacing: 2px;
-  }
+      .clock {
+        font-family: "DM Mono", monospace;
+        font-size: 22px;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 2px;
+      }
 
-  .live-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.3);
-    color: #6EE7B7;
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-  }
+      .live-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #6ee7b7;
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 500;
+      }
 
-  .live-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #10B981;
-    animation: blink 1.5s infinite;
-  }
+      .live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        animation: blink 1.5s infinite;
+      }
 
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
 
-  main { flex: 1; padding: 2.5rem; }
+      main {
+        flex: 1;
+        padding: 2.5rem;
+      }
 
-  /* Now serving hero */
-  .now-serving-section {
-    margin-bottom: 3rem;
-  }
+      /* Now serving hero */
+      .now-serving-section {
+        margin-bottom: 3rem;
+      }
 
-  .section-label {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
-    margin-bottom: 1rem;
-  }
+      .section-label {
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 1rem;
+      }
 
-  .now-serving-card {
-    background: linear-gradient(135deg, #1A1A3E, #0A0A2A);
-    border: 1px solid rgba(67,97,238,0.4);
-    border-radius: 20px;
-    padding: 2.5rem 3rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    position: relative;
-    overflow: hidden;
-  }
+      .now-serving-card {
+        background: linear-gradient(135deg, #1a1a3e, #0a0a2a);
+        border: 1px solid rgba(67, 97, 238, 0.4);
+        border-radius: 20px;
+        padding: 2.5rem 3rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
 
-  .now-serving-card::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(67,97,238,0.2), transparent);
-  }
+      .now-serving-card::before {
+        content: "";
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(67, 97, 238, 0.2),
+          transparent
+        );
+      }
 
-  .serving-ticket-large {
-    font-family: 'DM Mono', monospace;
-    font-size: clamp(3rem, 7vw, 5rem);
-    font-weight: 500;
-    letter-spacing: 6px;
-    color: #A5B4FC;
-    white-space: nowrap;
-  }
+      .serving-ticket-large {
+        font-family: "DM Mono", monospace;
+        font-size: clamp(3rem, 7vw, 5rem);
+        font-weight: 500;
+        letter-spacing: 6px;
+        color: #a5b4fc;
+        white-space: nowrap;
+      }
 
-  .serving-details { flex: 1; }
-  .serving-details .name { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 600; margin-bottom: 6px; }
-  .serving-details .service { font-size: 15px; color: rgba(255,255,255,0.5); }
+      .serving-details {
+        flex: 1;
+      }
+      .serving-details .name {
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .serving-details .service {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.5);
+      }
 
-  .now-serving-label-big {
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #A5B4FC;
-    font-weight: 600;
-    background: rgba(67,97,238,0.2);
-    padding: 6px 14px;
-    border-radius: 100px;
-    align-self: flex-start;
-  }
+      .now-serving-label-big {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #a5b4fc;
+        font-weight: 600;
+        background: rgba(67, 97, 238, 0.2);
+        padding: 6px 14px;
+        border-radius: 100px;
+        align-self: flex-start;
+      }
 
-  .empty-serving {
-    text-align: center;
-    padding: 2rem;
-    color: rgba(255,255,255,0.3);
-    font-size: 18px;
-  }
+      .empty-serving {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 18px;
+      }
 
-  /* Upcoming queue */
-  .upcoming-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-  }
+      /* Upcoming queue */
+      .upcoming-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+      }
 
-  .ticket-card {
-    background: #0F0F1F;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-    transition: border-color 0.2s;
-  }
+      .ticket-card {
+        background: #0f0f1f;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        transition: border-color 0.2s;
+      }
 
-  .ticket-card:hover { border-color: rgba(255,255,255,0.12); }
+      .ticket-card:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+      }
 
-  .tc-position {
-    font-size: 11px;
-    color: rgba(255,255,255,0.3);
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
+      .tc-position {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.3);
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+      }
 
-  .tc-ticket {
-    font-family: 'DM Mono', monospace;
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: #E0E7FF;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
-  }
+      .tc-ticket {
+        font-family: "DM Mono", monospace;
+        font-size: 1.6rem;
+        font-weight: 500;
+        color: #e0e7ff;
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+      }
 
-  .tc-name {
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+      .tc-name {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-  .tc-wait {
-    font-size: 12px;
-    color: rgba(255,255,255,0.3);
-  }
+      .tc-wait {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.3);
+      }
 
-  footer {
-    padding: 1rem 2.5rem;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: rgba(255,255,255,0.3);
-  }
+      footer {
+        padding: 1rem 2.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.3);
+      }
 
-  nav a { color: rgba(255,255,255,0.4); text-decoration: none; margin-left: 20px; font-size: 13px; }
-  nav a:hover { color: rgba(255,255,255,0.7); }
-</style>
-</head>
-<body>
-
-<header>
-  <div class="logo">Queue<span>Flow</span> <span style="font-size:14px; font-weight:400; color: rgba(255,255,255,0.3); margin-left:8px;">Display Board</span></div>
-  <div class="live-badge"><div class="live-dot"></div>Live</div>
-  <div class="clock" id="clock">00:00:00</div>
-</header>
-
-<main>
-  <!-- Now Serving -->
-  <div class="now-serving-section">
-    <div class="section-label">Now serving</div>
-    <div id="now-serving-card">
-      <div class="now-serving-card">
-        <div class="empty-serving" style="width:100%">Waiting for next customer...</div>
+      nav a {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+        margin-left: 20px;
+        font-size: 13px;
+      }
+      nav a:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        Queue<span>Flow</span>
+        <span
+          style="
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.3);
+            margin-left: 8px;
+          "
+          >Display Board</span
+        >
       </div>
-    </div>
-  </div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        Live
+      </div>
+      <div class="clock" id="clock">00:00:00</div>
+    </header>
 
-  <!-- Up Next -->
-  <div>
-    <div class="section-label" style="margin-bottom:1rem">Up next</div>
-    <div class="upcoming-grid" id="upcoming-grid">
-      <div style="color: rgba(255,255,255,0.3); font-size:14px; grid-column: 1/-1; padding: 1rem 0;">No customers waiting</div>
-    </div>
-  </div>
-</main>
+    <main>
+      <!-- Now Serving -->
+      <div class="now-serving-section">
+        <div class="section-label">Now serving</div>
+        <div id="now-serving-card">
+          <div class="now-serving-card">
+            <div class="empty-serving" style="width: 100%">
+              Waiting for next customer...
+            </div>
+          </div>
+        </div>
+      </div>
 
-<footer>
-  <span>Please have your ticket ready when called</span>
-  <nav>
-    <a href="index.html">Join Queue</a>
-    <a href="admin.html">Admin</a>
-  </nav>
-</footer>
+      <!-- Up Next -->
+      <div>
+        <div class="section-label" style="margin-bottom: 1rem">Up next</div>
+        <div class="upcoming-grid" id="upcoming-grid">
+          <div
+            style="
+              color: rgba(255, 255, 255, 0.3);
+              font-size: 14px;
+              grid-column: 1/-1;
+              padding: 1rem 0;
+            "
+          >
+            No customers waiting
+          </div>
+        </div>
+      </div>
+    </main>
 
-<script>
-  const serviceLabels = { GENERAL: 'General Inquiry', ACCOUNT: 'Account Services', LOAN: 'Loan & Mortgage', SUPPORT: 'Technical Support' };
+    <footer>
+      <span>Please have your ticket ready when called</span>
+      <nav>
+        <a href="index.html">Join Queue</a>
+        <a href="/admin">Admin</a>
+      </nav>
+    </footer>
 
-  function updateClock() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
-    document.getElementById('clock').textContent = h + ':' + m + ':' + s;
-  }
+    <script>
+      const serviceLabels = {
+        GENERAL: "General Inquiry",
+        ACCOUNT: "Account Services",
+        LOAN: "Loan & Mortgage",
+        SUPPORT: "Technical Support",
+      };
 
-  setInterval(updateClock, 1000);
-  updateClock();
+      function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, "0");
+        const m = String(now.getMinutes()).padStart(2, "0");
+        const s = String(now.getSeconds()).padStart(2, "0");
+        document.getElementById("clock").textContent = h + ":" + m + ":" + s;
+      }
 
-  async function loadDisplay() {
-    try {
-      // Load currently serving
-      const servingRes = await fetch('/api/queue/serving');
-      const card = document.getElementById('now-serving-card');
+      setInterval(updateClock, 1000);
+      updateClock();
 
-      if (servingRes.status === 204) {
-        card.innerHTML = `<div class="now-serving-card"><div class="empty-serving" style="width:100%">No customer currently being served</div></div>`;
-      } else {
-        const entry = await servingRes.json();
-        card.innerHTML = `
+      async function loadDisplay() {
+        try {
+          // Load currently serving
+          const servingRes = await fetch("/api/queue/serving");
+          const card = document.getElementById("now-serving-card");
+
+          if (servingRes.status === 204) {
+            card.innerHTML = `<div class="now-serving-card"><div class="empty-serving" style="width:100%">No customer currently being served</div></div>`;
+          } else {
+            const entry = await servingRes.json();
+            card.innerHTML = `
           <div class="now-serving-card">
             <div class="now-serving-label-big">Now Serving</div>
             <div class="serving-ticket-large">${entry.ticketNumber}</div>
             <div class="serving-details">
               <div class="name">${entry.customerName}</div>
-              <div class="service">${serviceLabels[entry.serviceType] || entry.serviceType}</div>
+              <div class="service">${
+                serviceLabels[entry.serviceType] || entry.serviceType
+              }</div>
             </div>
           </div>
         `;
-      }
+          }
 
-      // Load waiting queue
-      const queueRes = await fetch('/api/queue/status');
-      const queue = await queueRes.json();
-      const grid = document.getElementById('upcoming-grid');
+          // Load waiting queue
+          const queueRes = await fetch("/api/queue/status");
+          const queue = await queueRes.json();
+          const grid = document.getElementById("upcoming-grid");
 
-      if (queue.length === 0) {
-        grid.innerHTML = '<div style="color: rgba(255,255,255,0.3); font-size:14px; grid-column: 1/-1; padding: 1rem 0;">No customers waiting</div>';
-        return;
-      }
+          if (queue.length === 0) {
+            grid.innerHTML =
+              '<div style="color: rgba(255,255,255,0.3); font-size:14px; grid-column: 1/-1; padding: 1rem 0;">No customers waiting</div>';
+            return;
+          }
 
-      grid.innerHTML = queue.slice(0, 12).map(entry => `
+          grid.innerHTML = queue
+            .slice(0, 12)
+            .map(
+              (entry) => `
         <div class="ticket-card">
           <div class="tc-position">Position #${entry.position}</div>
           <div class="tc-ticket">${entry.ticketNumber}</div>
           <div class="tc-name">${entry.customerName}</div>
           <div class="tc-wait">~${entry.estimatedWaitMinutes} min wait</div>
         </div>
-      `).join('');
+      `
+            )
+            .join("");
+        } catch (err) {
+          console.error("Failed to load display data", err);
+        }
+      }
 
-    } catch (err) {
-      console.error('Failed to load display data', err);
-    }
-  }
-
-  loadDisplay();
-  setInterval(loadDisplay, 4000);
-</script>
-</body>
+      loadDisplay();
+      setInterval(loadDisplay, 4000);
+    </script>
+  </body>
 </html>
