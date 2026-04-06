@@ -11,5 +11,3 @@ App runs 24/7 on the VM
 |
 Anyone in the world can access it at
 http://YOUR-VM-IP:8080/index.html
-
-git push -u origin (branch name)
