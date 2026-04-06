@@ -474,7 +474,7 @@
             </div>
           </div>
 
-          <button class="btn-primary" id="joinBtn" onclick="joinQueue()">
+          <button class="btn-primary" id="joinBtn" onclick="joinAndRedirect()">
             Get my ticket →
           </button>
         </div>
@@ -587,6 +587,41 @@
         } catch (err) {
           alert("Could not join queue. Is the server running?");
         } finally {
+          btn.disabled = false;
+          btn.textContent = "Get my ticket →";
+        }
+      }
+
+      async function joinAndRedirect() {
+        const name = document.getElementById("customerName").value.trim();
+        const serviceType = document.querySelector(
+          'input[name="serviceType"]:checked'
+        ).value;
+        const errorEl = document.getElementById("name-error");
+
+        if (!name) {
+          errorEl.style.display = "block";
+          return;
+        }
+        errorEl.style.display = "none";
+
+        const btn = document.getElementById("joinBtn");
+        btn.disabled = true;
+        btn.textContent = "Processing...";
+
+        try {
+          const response = await fetch("/api/queue/join", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ customerName: name, serviceType }),
+          });
+
+          if (!response.ok) throw new Error("Failed to join queue");
+
+          // Redirect to display page after successful join
+          window.location.href = "display.html";
+        } catch (err) {
+          alert("Could not join queue. Is the server running?");
           btn.disabled = false;
           btn.textContent = "Get my ticket →";
         }
