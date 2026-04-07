@@ -46,10 +46,10 @@ manage_queue/
 │   │   │   ├── controller/
 │   │   │   │   ├── QueueController.java      # REST API for queue operations
 │   │   │   │   ├── AnalyticsController.java  # REST API for analytics/history
-│   │   │   │   └── PageController.java       # Serves admin.html securely
+│   │   │   │   └── PageController.java       # Serves admin securely
 │   │   │   ├── model/
-│   │   │   │   ├── QueueEntry.java           # Queue entry entity (ticket, status, position)
-│   │   │   │   └── Customer.java             # Customer entity (name, phone, email)
+│   │   │   │   ├── QueueEntry.java           # Queue entry entity
+│   │   │   │   └── Customer.java             # Customer entity
 │   │   │   ├── repository/
 │   │   │   │   └── QueueRepository.java      # Database queries with Spring Data JPA
 │   │   │   ├── service/
@@ -66,6 +66,7 @@ manage_queue/
 │   └── test/
 │       └── java/com/queue_manage/manage_queue/
 │           └── ManageQueueApplicationTests.java  # 15 automated tests
+│           └── QueueApplicationTests.java
 └── pom.xml                                   # Maven dependencies
 ```
 
